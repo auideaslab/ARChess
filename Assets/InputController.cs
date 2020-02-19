@@ -11,6 +11,31 @@ public class InputController : MonoBehaviour
         
     }
 
+    void selectPiece(Transform piece)
+    {
+        selectedPiece = piece;
+
+        Renderer[] renderers = selectedPiece.GetComponentsInChildren<Renderer>();
+        foreach (Renderer r in renderers)
+        {
+            r.material.EnableKeyword("_EMISSION");
+            r.material.SetColor("_EmissionColor", Color.red);
+        }
+    }
+
+    void deselectPiece()
+    {
+        if (selectedPiece)
+        {
+            Renderer[] renderers = selectedPiece.GetComponentsInChildren<Renderer>();
+            foreach (Renderer r in renderers)
+            {
+                r.material.DisableKeyword("_EMISSION");
+                r.material.SetColor("_EmissionColor", Color.black);
+            }
+        }
+        selectedPiece = null;
+    }
     // Update is called once per frame
     void Update()
     {
@@ -28,27 +53,15 @@ public class InputController : MonoBehaviour
                     if (selectedPiece)
                     {
                         selectedPiece.position = hit.transform.position;
-
-                        Renderer[] renderers = selectedPiece.GetComponentsInChildren<Renderer>();
-                        foreach (Renderer r in renderers)
-                        {
-                            r.material.DisableKeyword("_EMISSION");
-                            r.material.SetColor("_EmissionColor", Color.black);
-                        }
-                        selectedPiece = null;
+                        deselectPiece();
                         //selectedPiece.GetComponent<Renderer>().material.SetColor("_EmissionColor", Color.black);
                     }
                 }
 
                 if (hit.transform.tag == "piece")
                 {
-                    Renderer[] renderers = hit.transform.GetComponentsInChildren<Renderer>();
-                    selectedPiece = hit.transform;
-                    foreach (Renderer r in renderers)
-                    {
-                        r.material.EnableKeyword("_EMISSION");
-                        r.material.SetColor("_EmissionColor", Color.red);
-                    }
+
+                    selectPiece(hit.transform);
 
                 }
             }
