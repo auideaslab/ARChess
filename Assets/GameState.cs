@@ -16,14 +16,16 @@ public class GameState : MonoBehaviour
 
     // the function below is "static" which means it can be called through class name, like that: GameState.isValidMove
     // without a need to have a reference to this class. Using "static" is OK only for classes that for sure have just one object
-    // since there is only one game state, it is ok to have "static" functions. Otherwise, it would be a bad idea.
+    // Since there is only one game state, it is ok to have "static" functions. Otherwise, it would be a bad idea.
     public static bool isValidMove(Transform piece, Transform square) // given piece and square, the function checks if piece can move to the square
     {
         if (!piece || !square) return false; // if there is no piece or no square, move is impossible. This should never happen, but better save then sorry!
 
+        Square origin = piece.parent.GetComponent<Square>();
+        Square destination = square.GetComponent<Square>();
         if (piece.name.Contains("White")) // validate moves for whites
         {
-            if (piece.name.Contains("Pawn")) 
+            if (piece.name.Contains("Pawn") ) 
             {
                 if (true)  // replace that with conditions 
                 {
@@ -35,7 +37,17 @@ public class GameState : MonoBehaviour
 
             if (piece.name.Contains("King")) 
             {
-                if (true)  // replace that with conditions 
+                if (((origin.i + 1 == destination.i && origin.j == destination.j) || 
+                     (origin.i - 1 == destination.i && origin.j == destination.j) ||
+                     (origin.i + 1 == destination.i && origin.j + 1 == destination.j) ||
+                     (origin.i - 1 == destination.i && origin.j - 1 == destination.j) ||
+                     (origin.i == destination.i && origin.j + 1 == destination.j) ||
+                     (origin.i == destination.i && origin.j - 1 == destination.j) ||
+                     (origin.i - 1 == destination.i && origin.j + 1 == destination.j) ||
+                     (origin.i + 1 == destination.i && origin.j - 1 == destination.j))
+                    &&
+                     (!destination.piece || destination.piece.name.Contains("Black")))
+                    // replace that with conditions 
                 {
                     return true;
                 }
@@ -44,7 +56,15 @@ public class GameState : MonoBehaviour
 
             if (piece.name.Contains("Queen"))
             {
-                if (true)  // replace that with conditions 
+                if (((origin.i == destination.i && origin.j != destination.j) ||
+                     (origin.j == destination.j && origin.i != destination.i) ||
+                     (destination.j - origin.j == destination.i - origin.i) ||
+                     (origin.j - destination.j == destination.i - origin.i)) 
+
+                   &&
+                     (!destination.piece || destination.piece.name.Contains("Black")))
+                    
+                    //replace that with conditions 
                 {
                     return true;
                 }
