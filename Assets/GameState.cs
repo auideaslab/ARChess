@@ -6,6 +6,8 @@ using UnityEngine;
  */
 public class GameState : MonoBehaviour
 {
+    string playerColor = "White";
+    bool playersTurn = true;
     public static Transform[,] chessboard = new Transform[8,8]; // game state two-dimensiona array
     public GameObject originalSquare; // reference to square object we use to build the chessboard
     public Transform chessboardParent; // reference to container of our chessboard
@@ -140,9 +142,9 @@ public class GameState : MonoBehaviour
     // at the beginning of the game, we procedurally construct the chessboard
     void Start()
     {
-        for (int i = 0; i < 8; ++i) // in every row
+        for (int i = 0; i < 8; ++i) // in every column
         {
-            for (int j = 0; j < 8; ++j) // and every column of the chessboard
+            for (int j = 0; j < 8; ++j) // and every row of the chessboard
             {
                 GameObject square = Instantiate(originalSquare, chessboardParent); // create square
                 square.GetComponent<Square>().i = i; // let square remember it's row

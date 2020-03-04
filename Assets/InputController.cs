@@ -45,7 +45,7 @@ public class InputController : MonoBehaviour
         foreach (Renderer r in renderers) // iterate over all renderers collected in the previous step
         {
             r.material.EnableKeyword("_EMISSION"); // enable light emission in the shader
-            r.material.SetColor("_EmissionColor", Color.green); // set light emission to green
+            r.material.SetColor("_EmissionColor", new Color(0,0.5f,0,0.2f)); // set light emission to light, semi-transparent green
         }
     }
 
