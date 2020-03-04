@@ -82,9 +82,9 @@ public class InputController : MonoBehaviour
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition); // create an infinite ray from camera, thorough screen, into the game word
 
         RaycastHit hit; // this object will be filled up with whatever the ray hits
-        List<string> layers = new List<string>();
-        layers.Add("Square");
-        layers.Add(playerColor);
+        List<string> layers = new List<string>(); // create a list of layers we want to hit
+        layers.Add("Square"); // add square layer 
+        layers.Add(playerColor); // add player layer (either White or Black, depending who is the player)
 
         if (Physics.Raycast(ray, out hit, 100, LayerMask.GetMask(layers.ToArray()))) // perform the ray casting test. If anything was hit, it will be remembered in "hit" object
         {
