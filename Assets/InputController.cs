@@ -71,7 +71,7 @@ public class InputController : MonoBehaviour
             selectedSquare.GetComponent<Square>().piece = selectedPiece; // let square remember what piece is sitting on it
             selectedPiece.parent.GetComponent<Square>().piece = null; // remove piece from the current square
             selectedPiece.parent = selectedSquare; // let piece remember was piece it is sitting on, by setting it as parent
-       
+            GameState.playersTurn = false;
         }
     }
 
@@ -86,7 +86,7 @@ public class InputController : MonoBehaviour
         layers.Add("Square"); // add square layer 
         layers.Add(playerColor); // add player layer (either White or Black, depending who is the player)
 
-        if (Physics.Raycast(ray, out hit, 100, LayerMask.GetMask(layers.ToArray()))) // perform the ray casting test. If anything was hit, it will be remembered in "hit" object
+        if (GameState.playersTurn && Physics.Raycast(ray, out hit, 100, LayerMask.GetMask(layers.ToArray()))) // perform the ray casting test. If anything was hit, it will be remembered in "hit" object
         {
             if (hit.transform.tag == "square" && selectedPiece) // check if the tag of the object we hit is "square"
             {

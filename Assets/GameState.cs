@@ -7,13 +7,22 @@ using UnityEngine;
 public class GameState : MonoBehaviour
 {
     string playerColor = "White";
-    bool playersTurn = true;
+    public static bool playersTurn = true;
     public static Transform[,] chessboard = new Transform[8,8]; // game state two-dimensiona array
     public GameObject originalSquare; // reference to square object we use to build the chessboard
     public Transform chessboardParent; // reference to container of our chessboard
     public Transform chessPieces; // reference to parent of all pieces
     const int SQUARE_SIZE = 2; // this constant allow us to scale our chessboard
-
+    static bool isPathEmpty(Transform piece, Transform square, float maxDistance)
+    {
+        RaycastHit hit;
+        Debug.DrawRay(piece.position + Vector3.up, (square.position - piece.position),Color.red);
+        if (Physics.Raycast(piece.position + Vector3.up, (square.position-piece.position), out hit, maxDistance)) {
+            Debug.Log(hit.transform.name);
+            return false;        
+        }
+        return true;
+    }
     // the function below is "static" which means it can be called through class name, like that: GameState.isValidMove
     // without a need to have a reference to this class. Using "static" is OK only for classes that for sure have just one object
     // Since there is only one game state, it is ok to have "static" functions. Otherwise, it would be a bad idea.
@@ -23,6 +32,11 @@ public class GameState : MonoBehaviour
 
         Square origin = piece.parent.GetComponent<Square>();
         Square destination = square.GetComponent<Square>();
+
+        float maxDistance = Mathf.Sqrt((Mathf.Pow((Mathf.Abs(origin.j - destination.j) -1), 2) 
+                          + Mathf.Pow((Mathf.Abs((origin.i - destination.i)) -1), 2)));
+
+        Debug.Log(maxDistance);
         if (piece.name.Contains("White")) // validate moves for whites
         {
             if (piece.name.Contains("Pawn") ) 
@@ -59,8 +73,8 @@ public class GameState : MonoBehaviour
                 if (((origin.i == destination.i && origin.j != destination.j) ||
                      (origin.j == destination.j && origin.i != destination.i) ||
                      (destination.j - origin.j == destination.i - origin.i) ||
-                     (origin.j - destination.j == destination.i - origin.i)) 
-
+                     (origin.j - destination.j == destination.i - origin.i))
+                   && isPathEmpty(piece, square, maxDistance)
                    &&
                      (!destination.piece || destination.piece.name.Contains("Black")))
                     
@@ -71,9 +85,14 @@ public class GameState : MonoBehaviour
                 else return false;
             }
 
-            if (piece.name.Contains("Bishop"))
+            if (piece.name.Contains("Bishop") )
             {
-                if (true)  // replace that with conditions 
+
+                if (((destination.j - origin.j == destination.i - origin.i) ||
+                    (origin.j - destination.j == destination.i - origin.i))
+                   && isPathEmpty(piece,square, maxDistance)
+                   &&
+                   (!destination.piece || destination.piece.name.Contains("Black")))  // replace that with conditions 
                 {
                     return true;
                 }
@@ -82,7 +101,11 @@ public class GameState : MonoBehaviour
 
             if (piece.name.Contains("Rook"))
             {
-                if (true)  // replace that with conditions 
+                if (((origin.i == destination.i && origin.j != destination.j) ||
+                     (origin.j == destination.j && origin.i != destination.i))
+                   && isPathEmpty(piece, square, maxDistance)
+                   &&
+                   (!destination.piece || destination.piece.name.Contains("Black")))// replace that with conditions 
                 {
                     return true;
                 }
