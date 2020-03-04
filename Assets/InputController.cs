@@ -6,7 +6,7 @@ using UnityEngine;
  */
 public class InputController : MonoBehaviour
 {
-
+    string playerColor = "White";
     Transform selectedPiece; // reference to the selected piece, initially empty
     Transform selectedSquare; // reference to the selected square, initially empty;
 
@@ -69,7 +69,9 @@ public class InputController : MonoBehaviour
         {
             selectedPiece.position = selectedSquare.position; // move the piece. Later, we will animate this step, but for now the move is immediate
             selectedSquare.GetComponent<Square>().piece = selectedPiece; // let square remember what piece is sitting on it
+            selectedPiece.parent.GetComponent<Square>().piece = null; // remove piece from the current square
             selectedPiece.parent = selectedSquare; // let piece remember was piece it is sitting on, by setting it as parent
+       
         }
     }
 
@@ -80,8 +82,11 @@ public class InputController : MonoBehaviour
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition); // create an infinite ray from camera, thorough screen, into the game word
 
         RaycastHit hit; // this object will be filled up with whatever the ray hits
+        List<string> layers = new List<string>();
+        layers.Add("Square");
+        layers.Add(playerColor);
 
-        if (Physics.Raycast(ray, out hit, 100)) // perform the ray casting test. If anything was hit, it will be remembered in "hit" object
+        if (Physics.Raycast(ray, out hit, 100, LayerMask.GetMask(layers.ToArray()))) // perform the ray casting test. If anything was hit, it will be remembered in "hit" object
         {
             if (hit.transform.tag == "square" && selectedPiece) // check if the tag of the object we hit is "square"
             {
@@ -99,12 +104,15 @@ public class InputController : MonoBehaviour
                     highlightInvalid(); // in selectSquare, we assumed the the move is valid, but now we know it is not, so we highlight the square as invalid
                 }
             }
+
+            if (Input.GetMouseButtonDown(0) && hit.transform.tag == "piece" && hit.transform.name.Contains(playerColor)) // if we clicked on our piece 
+            {
+                selectPiece(hit.transform); // then we select that piece
+                deselectSquare();
+            }
         }
 
-        if (Input.GetMouseButtonDown(0) && hit.transform.tag == "piece") // if we clicked on a piece
-        {
-            selectPiece(hit.transform); // then we select that piece
-        }
+
     }
 
 }
