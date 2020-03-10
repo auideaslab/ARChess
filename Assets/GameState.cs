@@ -16,9 +16,20 @@ public class GameState : MonoBehaviour
     static bool isPathEmpty(Transform piece, Transform square, float maxDistance)
     {
         RaycastHit hit;
-        Debug.DrawRay(piece.position + Vector3.up, (square.position - piece.position),Color.red);
-        if (Physics.Raycast(piece.position + Vector3.up, (square.position-piece.position), out hit, maxDistance)) {
-            Debug.Log(hit.transform.name);
+        // draw a line in scene view, so we see it for raycasting. First I get a vector of direction, then normalize it (make it lenght to be 1 unit long)
+        // and then multiply it by our max Distance.
+        Debug.DrawRay(piece.position + Vector3.up,  (square.position-piece.position).normalized * maxDistance, Color.red);
+
+        // create a list of layers that will be used for raycasting. Every game object is by default on "Default" layer, but like with tags
+        // you can create custom layers. I created "White" layer and "Black" layer. Each piece is on white or black layer
+        // by specifying the layers for raycasting, I make sure that hitting other objects is ignored: raycasting only returns true if the
+        // ray hits an object on one of the specified layers.
+        List<string> layers = new List<string>(); // create a list of layers we want to hit
+        layers.Add("White"); // add whites layer 
+        layers.Add("Black"); // add blacks layer 
+
+        if (Physics.Raycast(piece.position + Vector3.up, (square.position-piece.position), out hit, maxDistance, LayerMask.GetMask(layers.ToArray()))) {
+            Debug.Log("The path toward the destination is occupied! You can't move over other pieces unless you are a knight");
             return false;        
         }
         return true;
@@ -30,11 +41,13 @@ public class GameState : MonoBehaviour
     {
         if (!piece || !square) return false; // if there is no piece or no square, move is impossible. This should never happen, but better save then sorry!
 
-        Square origin = piece.parent.GetComponent<Square>();
-        Square destination = square.GetComponent<Square>();
+        Square origin = piece.parent.GetComponent<Square>(); // get the square component from the square on which our selected piece sits on
+        Square destination = square.GetComponent<Square>(); // get the square component from the square of the potential destination
 
-        float maxDistance = Mathf.Sqrt((Mathf.Pow((Mathf.Abs(origin.j - destination.j) -1), 2) 
-                          + Mathf.Pow((Mathf.Abs((origin.i - destination.i)) -1), 2)));
+        // max distance for raycasting is a square right in front of the destination square
+        // (remember the bug from class? We used "1" instead of SQUARE_SIZE, so the ray was too short! (it would work if squares were of size 1)
+        // the caclualtion may look complex but this is a simple Pitagoras theorem a^2+b^2=c^2
+        float maxDistance = Vector3.Distance(square.position, piece.position) - SQUARE_SIZE;
 
         Debug.Log(maxDistance);
         if (piece.name.Contains("White")) // validate moves for whites
@@ -70,6 +83,7 @@ public class GameState : MonoBehaviour
 
             if (piece.name.Contains("Queen"))
             {
+
                 if (((origin.i == destination.i && origin.j != destination.j) ||
                      (origin.j == destination.j && origin.i != destination.i) ||
                      (destination.j - origin.j == destination.i - origin.i) ||
