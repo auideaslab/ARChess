@@ -71,7 +71,7 @@ public class InputController : MonoBehaviour
             selectedSquare.GetComponent<Square>().piece = selectedPiece; // let square remember what piece is sitting on it
             selectedPiece.parent.GetComponent<Square>().piece = null; // remove piece from the current square
             selectedPiece.parent = selectedSquare; // let piece remember was piece it is sitting on, by setting it as parent
-            //GameState.playersTurn = false;
+            GameState.playersTurn = false;
         }
     }
 

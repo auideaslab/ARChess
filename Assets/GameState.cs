@@ -7,7 +7,7 @@ using UnityEngine;
 public class GameState : MonoBehaviour
 {
     string playerColor = "White";
-    public static bool playersTurn = true;
+    public static bool playersTurn = true; // player, not AI, gets the first move, regardless of color
     public static Transform[,] chessboard = new Transform[8,8]; // game state two-dimensiona array
     public GameObject originalSquare; // reference to square object we use to build the chessboard
     public Transform chessboardParent; // reference to container of our chessboard
@@ -20,7 +20,7 @@ public class GameState : MonoBehaviour
         // and then multiply it by our max Distance.
         Debug.DrawRay(piece.position + Vector3.up,  (square.position-piece.position).normalized * maxDistance, Color.red);
 
-        // create a list of layers that will be used for raycasting. Every game object is by default on "Default" layer, but like with tags
+        // create a list of layers that will be used for raycasting. Every game object is by default on "Default" layer, but like with the tags
         // you can create custom layers. I created "White" layer and "Black" layer. Each piece is on white or black layer
         // by specifying the layers for raycasting, I make sure that hitting other objects is ignored: raycasting only returns true if the
         // ray hits an object on one of the specified layers.
@@ -29,7 +29,7 @@ public class GameState : MonoBehaviour
         layers.Add("Black"); // add blacks layer 
 
         if (Physics.Raycast(piece.position + Vector3.up, (square.position-piece.position), out hit, maxDistance, LayerMask.GetMask(layers.ToArray()))) {
-            Debug.Log("The path toward the destination is occupied! You can't move over other pieces unless you are a knight");
+            Debug.Log("GameState: Hey, dude! The path toward the destination is occupied! You can't move over other pieces unless you are a knight!");
             return false;        
         }
         return true;
@@ -49,17 +49,19 @@ public class GameState : MonoBehaviour
         // the caclualtion may look complex but this is a simple Pitagoras theorem a^2+b^2=c^2
         float maxDistance = Vector3.Distance(square.position, piece.position) - SQUARE_SIZE;
 
-        Debug.Log(maxDistance);
         if (piece.name.Contains("White")) // validate moves for whites
         {
-            if (piece.name.Contains("Pawn") ) 
+            if (piece.name.Contains("Pawn"))
             {
-                if (true)  // replace that with conditions 
-                {
-                    return true;
-                }
-                else return false;
-            } 
+                    if (((origin.j + 1 == destination.j && origin.i == destination.i) && (!destination.piece)) ||
+                        ((origin.j + 2 == destination.j && origin.i == destination.i) && (!destination.piece) && origin.j == 1 && isPathEmpty(piece,square,maxDistance)) ||
+                        ((origin.j + 1 == destination.j && origin.i + 1 == destination.i) && destination.piece && destination.piece.name.Contains("Black")) ||
+                        ((origin.j + 1 == destination.j && origin.i - 1 == destination.i) && destination.piece && (destination.piece.name.Contains("Black"))))
+                    {
+                        return true;
+                    }
+                    else return false;
+             }
            
 
             if (piece.name.Contains("King")) 
@@ -128,7 +130,15 @@ public class GameState : MonoBehaviour
 
             if (piece.name.Contains("Horse"))
             {
-                if (true)  // replace that with conditions 
+                if (((origin.i - 1 == destination.i && origin.j + 2 == destination.j) ||
+                    (origin.i + 1 == destination.i && origin.j + 2 == destination.j) ||
+                    (origin.i - 1 == destination.i && origin.j - 2 == destination.j) ||
+                    (origin.i + 1 == destination.i && origin.j - 2 == destination.j) ||
+                    (origin.i - 2 == destination.i && origin.j - 1 == destination.j) ||
+                    (origin.i - 2 == destination.i && origin.j + 1 == destination.j) ||
+                    (origin.i + 2 == destination.i && origin.j - 1 == destination.j) ||
+                    (origin.i + 2 == destination.i && origin.j + 1 ==destination.j)) 
+                    && (!destination.piece || destination.piece.name.Contains("Black")))
                 {
                     return true;
                 }
@@ -137,19 +147,33 @@ public class GameState : MonoBehaviour
         }
         if (piece.name.Contains("Black")) // validate moves for blacks
         {
-            if (piece.name.Contains("Pawn"))
+             if (piece.name.Contains("Pawn"))
             {
-                if (true)  // replace that with conditions 
-                {
-                    return true;
-                }
-                else return false;
-            }
 
+                    if (((origin.j - 1 == destination.j && origin.i == destination.i) && (!destination.piece)) ||
+                        ((origin.j - 2 == destination.j && origin.i == destination.i) && (!destination.piece) && origin.j == 6 && isPathEmpty(piece,square,maxDistance)) ||
+                        ((origin.j - 1 == destination.j && origin.i + 1 == destination.i) && destination.piece && destination.piece.name.Contains("White")) ||
+                        ((origin.j - 1 == destination.j && origin.i - 1 == destination.i) && destination.piece && (destination.piece.name.Contains("White"))))
+                    {
+                        return true;
+                    }
+                    else return false;
+             }
+           
 
-            if (piece.name.Contains("King"))
+            if (piece.name.Contains("King")) 
             {
-                if (true)  // replace that with conditions 
+                if (((origin.i + 1 == destination.i && origin.j == destination.j) || 
+                     (origin.i - 1 == destination.i && origin.j == destination.j) ||
+                     (origin.i + 1 == destination.i && origin.j + 1 == destination.j) ||
+                     (origin.i - 1 == destination.i && origin.j - 1 == destination.j) ||
+                     (origin.i == destination.i && origin.j + 1 == destination.j) ||
+                     (origin.i == destination.i && origin.j - 1 == destination.j) ||
+                     (origin.i - 1 == destination.i && origin.j + 1 == destination.j) ||
+                     (origin.i + 1 == destination.i && origin.j - 1 == destination.j))
+                    &&
+                     (!destination.piece || destination.piece.name.Contains("White")))
+                    // replace that with conditions 
                 {
                     return true;
                 }
@@ -158,16 +182,30 @@ public class GameState : MonoBehaviour
 
             if (piece.name.Contains("Queen"))
             {
-                if (true)  // replace that with conditions 
+
+                if (((origin.i == destination.i && origin.j != destination.j) ||
+                     (origin.j == destination.j && origin.i != destination.i) ||
+                     (destination.j - origin.j == destination.i - origin.i) ||
+                     (origin.j - destination.j == destination.i - origin.i))
+                   && isPathEmpty(piece, square, maxDistance)
+                   &&
+                     (!destination.piece || destination.piece.name.Contains("White")))
+                    
+                    //replace that with conditions 
                 {
                     return true;
                 }
                 else return false;
             }
 
-            if (piece.name.Contains("Bishop"))
+            if (piece.name.Contains("Bishop") )
             {
-                if (true)  // replace that with conditions 
+
+                if (((destination.j - origin.j == destination.i - origin.i) ||
+                    (origin.j - destination.j == destination.i - origin.i))
+                   && isPathEmpty(piece,square, maxDistance)
+                   &&
+                   (!destination.piece || destination.piece.name.Contains("White")))  // replace that with conditions 
                 {
                     return true;
                 }
@@ -176,7 +214,11 @@ public class GameState : MonoBehaviour
 
             if (piece.name.Contains("Rook"))
             {
-                if (true)  // replace that with conditions 
+                if (((origin.i == destination.i && origin.j != destination.j) ||
+                     (origin.j == destination.j && origin.i != destination.i))
+                   && isPathEmpty(piece, square, maxDistance)
+                   &&
+                   (!destination.piece || destination.piece.name.Contains("White")))// replace that with conditions 
                 {
                     return true;
                 }
@@ -185,14 +227,22 @@ public class GameState : MonoBehaviour
 
             if (piece.name.Contains("Horse"))
             {
-                if (true)  // replace that with conditions 
+                if (((origin.i - 1 == destination.i && origin.j + 2 == destination.j) ||
+                    (origin.i + 1 == destination.i && origin.j + 2 == destination.j) ||
+                    (origin.i - 1 == destination.i && origin.j - 2 == destination.j) ||
+                    (origin.i + 1 == destination.i && origin.j - 2 == destination.j) ||
+                    (origin.i - 2 == destination.i && origin.j - 1 == destination.j) ||
+                    (origin.i - 2 == destination.i && origin.j + 1 == destination.j) ||
+                    (origin.i + 2 == destination.i && origin.j - 1 == destination.j) ||
+                    (origin.i + 2 == destination.i && origin.j + 1 ==destination.j)) 
+                    && (!destination.piece || destination.piece.name.Contains("White")))
                 {
                     return true;
                 }
                 else return false;
-            }
+            }        
         }
-
+        Debug.Log("GameState: Nope! That's not a valid move!");
         return false;
     }
 
