@@ -42,16 +42,19 @@ public class AI : MonoBehaviour
         Debug.Log ("SKIPPY: Ugh! All my random attempts failed... Let's try to be more systematic.");
         // we did not exit the function yet? well, then let's try a systematic approach
         // that is, trying each and every square in the chessboard until we find (or not, if there is none) a valid destination piece
+
         for (int i=0; i < 8; ++i)  // for every column of the chessboard
         {
             for (int j=0; j < 8; ++j) // and every row of the chessboard
             {
-                Debug.Log("SKIPPY: How about I try to move " + potentiallySelectedPiece.name+ " to the square at row "+j+ "and column "+i);
-                if (GameState.isValidMove(potentiallySelectedPiece, GameState.chessboard[i,j])) //check if that square is a valid destination for our piece
-                    selectedSquare = GameState.chessboard[i,j]; // hurray! we found a destination square that works for or piece!
-                    Debug.Log("Selected square: "+ selectedSquare.name);
-                    Debug.Log("SKIPPY: Awesome! For " + potentiallySelectedPiece.name+ " the square at row "+j+ " and column "+i+" is a valid move! Being systematic paid off!");
+                Debug.Log("SKIPPY: How about I try to move " + potentiallySelectedPiece.name+ " to the square at row "+j+ " and column "+i);
+                if (GameState.isValidMove(potentiallySelectedPiece, GameState.chessboard[i, j]))
+                { //check if that square is a valid destination for our piece
+                    selectedSquare = GameState.chessboard[i, j]; // hurray! we found a destination square that works for or piece!
+                    Debug.Log("Selected square: " + selectedSquare.name);
+                    Debug.Log("SKIPPY: Awesome! For " + potentiallySelectedPiece.name + " the square at row " + j + " and column " + i + " is a valid move! Being systematic paid off!");
                     return true; // since we are done, ;et's exit the while loop
+                }
             }
             Debug.Log("SKIPPY: Well, row "+i+" did not work... Let's try the next one");
         }
