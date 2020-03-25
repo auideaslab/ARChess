@@ -53,8 +53,8 @@ public class GameState : MonoBehaviour
         {
             if (piece.name.Contains("Pawn"))
             {
-                    if (((origin.j + 1 == destination.j && origin.i == destination.i) && (!destination.piece)) ||
-                        ((origin.j + 2 == destination.j && origin.i == destination.i) && (!destination.piece) && origin.j == 1 && isPathEmpty(piece,square,maxDistance)) ||
+                    if (((origin.j + 1 == destination.j && origin.i == destination.i) && !destination.piece) ||
+                        ((origin.j + 2 == destination.j && origin.i == destination.i) && !destination.piece && origin.j == 1 && isPathEmpty(piece,square,maxDistance)) ||
                         ((origin.j + 1 == destination.j && origin.i + 1 == destination.i) && destination.piece && destination.piece.name.Contains("Black")) ||
                         ((origin.j + 1 == destination.j && origin.i - 1 == destination.i) && destination.piece && (destination.piece.name.Contains("Black"))))
                     {
@@ -150,8 +150,8 @@ public class GameState : MonoBehaviour
              if (piece.name.Contains("Pawn"))
             {
 
-                    if (((origin.j - 1 == destination.j && origin.i == destination.i) && (!destination.piece)) ||
-                        ((origin.j - 2 == destination.j && origin.i == destination.i) && (!destination.piece) && origin.j == 6 && isPathEmpty(piece,square,maxDistance)) ||
+                    if (((origin.j - 1 == destination.j && origin.i == destination.i) && !destination.piece) ||
+                        ((origin.j - 2 == destination.j && origin.i == destination.i) && !destination.piece && origin.j == 6 && isPathEmpty(piece,square,maxDistance)) ||
                         ((origin.j - 1 == destination.j && origin.i + 1 == destination.i) && destination.piece && destination.piece.name.Contains("White")) ||
                         ((origin.j - 1 == destination.j && origin.i - 1 == destination.i) && destination.piece && (destination.piece.name.Contains("White"))))
                     {
@@ -188,8 +188,7 @@ public class GameState : MonoBehaviour
                      (destination.j - origin.j == destination.i - origin.i) ||
                      (origin.j - destination.j == destination.i - origin.i))
                    && isPathEmpty(piece, square, maxDistance)
-                   &&
-                     (!destination.piece || destination.piece.name.Contains("White")))
+                   && (!destination.piece || destination.piece.name.Contains("White")))
                     
                     //replace that with conditions 
                 {
@@ -209,7 +208,7 @@ public class GameState : MonoBehaviour
                 {
                     return true;
                 }
-                else return false;
+                //else return false;
             }
 
             if (piece.name.Contains("Rook"))
