@@ -7,15 +7,12 @@ public class AI : MonoBehaviour
     string ai_player = "Black"; // name of the player, "Black" by default, but we can change it at a start of the game
     Transform selectedPiece = null; // current valid piece to move
     Transform selectedSquare = null; // curent valid destination for our piece
-    List<Transform> aiPieces = new List<Transform>(); // list of all pieces of that AI player
+    
 
     // Start is called before the first frame update
     void Start()
     {
-        foreach (GameObject t in GameObject.FindGameObjectsWithTag("piece")) { // find all objects tagged as "piece" and iterate over them
-            if (t.name.Contains(ai_player)) // if the piece name agrees with ai_player name ("Black" by default)...
-                aiPieces.Add(t.transform); // add it to the list of AI pieces
-        }
+
     }
 
     // this fuction tries to find a chessboard square where the current figure could be placed. As we painfully learned in class, it is not always possible
@@ -63,7 +60,6 @@ public class AI : MonoBehaviour
         return false; // sadly, there is no valid destination square for our potentiallySelectedPiece
     }
 
-
     bool selectPiece()
     {
 
@@ -77,8 +73,8 @@ public class AI : MonoBehaviour
         while (attemptCount < MAX_ATTEMPTS) // as long as we didn't find a piece that can move, and we did not exhaust all attempts...
         {  
             attemptCount++; // increase attempts count
-            int pieceIndex = Random.Range(0, aiPieces.Count); // select random index of a piece. list.Count gives you a number of elements in a list (which may change over time)
-            Transform candidatePiece = aiPieces[pieceIndex];  // this is our candidate piece to move
+            int pieceIndex = Random.Range(0, GameState.activePieces[ai_player].Count); // select random index of a piece. list.Count gives you a number of elements in a list (which may change over time)
+            Transform candidatePiece = GameState.activePieces[ai_player][pieceIndex];  // this is our candidate piece to move
             Debug.Log("SKIPPY: How about moving " +candidatePiece.name);
             if (selectSquare(candidatePiece)) // let's try to find a destination square for our candiate piece
             {
@@ -93,7 +89,7 @@ public class AI : MonoBehaviour
         // so let's try a systematic approach: go through all pieces, one by one, and try selecting a destination for it
         
         Debug.Log("SKIPPY: Hmm, for some reason my random approach was not successful. So unlikely! How did I end up in such an unlucky branch of the multiverse? Well, let's try to be systematic then...");
-        foreach (Transform candidatePiece in aiPieces) // for all pieces in our list of pieces
+        foreach (Transform candidatePiece in GameState.activePieces[ai_player]) // for all pieces in our list of pieces
         {   
             Debug.Log("SKIPPY: Ok, so how about " + candidatePiece.name);
             
@@ -116,13 +112,9 @@ public class AI : MonoBehaviour
         
         if (selectPiece()) // check if there is piece to move with a valid destination
         {
-            selectedPiece.position = selectedSquare.position; // move the piece. Later, we will animate this step, but for now the move is immediate
-            selectedSquare.GetComponent<Square>().piece = selectedPiece; // let square remember what piece is sitting on it
-            selectedPiece.parent.GetComponent<Square>().piece = null; // remove piece from the current square
-            selectedPiece.parent = selectedSquare; // let piece remember was piece it is sitting on, by setting it as parent
-            GameState.playersTurn = true; // AI are done with moving. It is players turn now
-            selectedSquare = null; // we need to remember to delete the selected square and piece, so we don't use it again
-            selectedPiece = null;
+            GameState.movePiece(selectedPiece, selectedSquare);
+            GameState.playersTurn = true;
+            GameState.aiTurn = false;
         } else {
             Debug.Log ("GameState: There is no valid move for any piece! You've lost, SKIPPY!");// since there was no way to select a piece, AI lost the game!
             //TODO: where and how should be specify that the game is lost? 
@@ -133,9 +125,10 @@ public class AI : MonoBehaviour
     void Update()
     {
         // every frame, we check if it AI turn.
-        if (!GameState.playersTurn) // if it is AI turn (that is, if it is not player's turn)
+        if (GameState.aiTurn) // if it is AI turn (that is, if it is not player's turn)
         {
-            makeRandomMove(); // try to find an AI piece and move it
+            Invoke("makeRandomMove",4); // try to find an AI piece and move it
+            GameState.aiTurn = false;
         }
     }
 }

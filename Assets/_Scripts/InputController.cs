@@ -63,18 +63,6 @@ public class InputController : MonoBehaviour
         selectedPiece = null; // forget the piece
     }
 
-    void movePiece()
-    {
-        if (selectedSquare && selectedPiece) // check if there is piece to move and the destination for it was selected
-        {
-            selectedPiece.position = selectedSquare.position; // move the piece. Later, we will animate this step, but for now the move is immediate
-            selectedSquare.GetComponent<Square>().piece = selectedPiece; // let square remember what piece is sitting on it
-            selectedPiece.parent.GetComponent<Square>().piece = null; // remove piece from the current square
-            selectedPiece.parent = selectedSquare; // let piece remember was piece it is sitting on, by setting it as parent
-            GameState.playersTurn = false;
-        }
-    }
-
     // Update is called once per frame
     void Update()
     {
@@ -95,8 +83,11 @@ public class InputController : MonoBehaviour
                 {
                     if (Input.GetMouseButtonDown(0)) // check if the mouse button was pressed and whether the move is valid 
                     {
-                        movePiece(); // move the piece
+                        GameState.movePiece(selectedPiece, selectedSquare); // move the piece
                         deselectPiece(); // deselected the piece after it was moved
+                        GameState.playersTurn = false;
+                        GameState.aiTurn = true;
+
                     }
                 }
                 else
