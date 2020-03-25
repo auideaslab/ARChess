@@ -12,7 +12,10 @@
     "com.unity.purchasing": "2.0.6",
     "com.unity.test-framework": "1.1.11",
     "com.unity.textmeshpro": "2.0.1",
+<<<<<<< HEAD
     "com.unity.timeline": "1.1.0",
+=======
+>>>>>>> 06606e842abc507d1aff2a6501dc8fc4c8fd38f4
     "com.unity.ugui": "1.0.0",
     "com.unity.modules.ai": "1.0.0",
     "com.unity.modules.androidjni": "1.0.0",
