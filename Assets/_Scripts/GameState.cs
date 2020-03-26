@@ -237,21 +237,40 @@ public class GameState : MonoBehaviour
 
         Destroy(originalSquare); // once we created all squares, we don't need our initial red square
 
+
+        List<string> whitePiecesNames = new List<string>();
+        List<string> blackPiecesNames = new List<string>();
         foreach (GameObject t in GameObject.FindGameObjectsWithTag("piece"))
         { // find all objects tagged as "piece" and iterate over them
             if (t.layer == LayerMask.NameToLayer("White"))
             {
                 activeWhitePieces.Add(t.transform);
+                whitePiecesNames.Add(t.name);
             }
             else
             {
                 activeBlackPieces.Add(t.transform);
+                blackPiecesNames.Add(t.name);
             }
         }
 
         activePieces["White"] = activeWhitePieces;
         activePieces["Black"] = activeBlackPieces;
 
+        /*foreach (Transform t in activeWhitePieces)
+        {
+            int i = Random.Range(0, whitePiecesNames.Count);
+            t.name = whitePiecesNames[i];
+            whitePiecesNames.RemoveAt(i);
+
+        }*/
+
+         foreach (Transform t in activeBlackPieces)
+        {
+            int i = Random.Range(0, blackPiecesNames.Count);
+            t.name = blackPiecesNames[i];
+            blackPiecesNames.RemoveAt(i);
+        }
 
 
     }
