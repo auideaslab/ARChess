@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.AI;
 /*
  *  This class handles game state: it remembers current game state and allows others to check whether a move is valid
  */
@@ -49,11 +50,8 @@ public class GameState : MonoBehaviour
     {
         piece.GetComponent<Collider>().enabled = false;
         piece.parent.GetComponent<Square>().piece = null;
-        piece.position = square.position; // move the piece. Later, we will animate this step, but for now the move is immediate
-        if (square.GetComponent<Square>().piece != null)
-        {
-            GameState.eliminatePiece(square.GetComponent<Square>().piece);
-        }
+        piece.GetComponent<NavMeshAgent>().SetDestination(square.position); // move the piece. Later, we will animate this step, but for now the move is immediate
+        piece.GetComponent<PieceBehaviour>().enemy = square.GetComponent<Square>().piece; // set enemy in the moving piece to enemy piece, if there is any
         square.GetComponent<Square>().piece = piece; // let square remember what piece is sitting on it
         piece.parent = square; // let piece remember was piece it is sitting on, by setting it as parent
         piece.GetComponent<Collider>().enabled = true;
@@ -80,7 +78,7 @@ public class GameState : MonoBehaviour
         
         piece.GetComponent<Rigidbody>().AddForce(direction, ForceMode.Impulse); // push the piece out of the chessboard in a direction dependent on the piece color
         //piece.GetComponent<Collider>().enabled = true; // re-enable pieces collider, so when it hits the wall it will not go through it
-        //Destroy(pieceToTake.gameObject, 5);
+        Destroy(piece.gameObject, 5);
     }
     // the function below is "static" which means it can be called through class name, like that: GameState.isValidMove
     // without a need to have a reference to this class. Using "static" is OK only for classes that for sure have just one object
