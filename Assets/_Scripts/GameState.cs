@@ -59,26 +59,18 @@ public class GameState : MonoBehaviour
 
     public static void eliminatePiece(Transform piece)
     {
-        piece.GetComponent<Collider>().enabled = false; // disable piece collider
-        piece.parent.GetComponent<Square>().piece = null; // remove current square's reference to the piece
+        //piece.parent.GetComponent<Square>().piece = null; // remove current square's reference to the piece
         piece.parent = null; // remove pieces reference to its square
-        piece.gameObject.AddComponent<Rigidbody>(); // make it respond to physics
-        piece.GetComponent<Rigidbody>().useGravity = true; // make it respond to gravity
-
-        Vector3 direction = new Vector3(0, 10, Random.Range(40, 60)); // prepare push direction
-        if (piece.name.Contains("White"))
+        if (piece.name.Contains("Black"))
         {
-            direction = new Vector3(0, 10, Random.Range(-60, -40)); // if it is white, the direction is negative on z axxis
-            activeWhitePieces.Remove(piece); // remove piece from the list of live white pieces
+            activePieces["Black"].Remove(piece);
         }
         else
         {
-            activeBlackPieces.Remove(piece); // remove piece from the list of live black pieces
+            activePieces["White"].Remove(piece);
         }
-        
-        piece.GetComponent<Rigidbody>().AddForce(direction, ForceMode.Impulse); // push the piece out of the chessboard in a direction dependent on the piece color
-        //piece.GetComponent<Collider>().enabled = true; // re-enable pieces collider, so when it hits the wall it will not go through it
-        Destroy(piece.gameObject, 5);
+         //piece.GetComponent<Collider>().enabled = true; // re-enable pieces collider, so when it hits the wall it will not go through it
+        Destroy(piece.gameObject);
     }
     // the function below is "static" which means it can be called through class name, like that: GameState.isValidMove
     // without a need to have a reference to this class. Using "static" is OK only for classes that for sure have just one object

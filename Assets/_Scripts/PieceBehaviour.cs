@@ -8,7 +8,7 @@ public class PieceBehaviour : MonoBehaviour
     NavMeshAgent agent;
     Animator anim;
     public Transform enemy;
-    const int MAX_HEALTH = 500;
+    const int MAX_HEALTH = 100;
     int health = MAX_HEALTH;
     // Start is called before the first frame update
     void Start()
@@ -20,23 +20,29 @@ public class PieceBehaviour : MonoBehaviour
     // function called if the piece is under attack
     public void underAttack()
     {
-        health--; // reduce health
-        if (health < 1) 
-            GameState.eliminatePiece(transform); // ask Game State to eliminate the piece
+        if (health > 0)
+        {
+            health--; // reduce health
+        }
+        
+        if (health == 0)
+        {
+           GameState.eliminatePiece(transform); // ask Game State to eliminate the piece
+        }
     }
 
     // Update is called once per frame
     void Update()
     {
 
-        if (agent.velocity.magnitude > 0.1f) // if speed (that is magnitute of velocity vector) is not zero, then we are moving
+        if (!enemy && agent.velocity.magnitude > 0.1f) // if speed (that is magnitute of velocity vector) is not zero, then we are moving
                                              // we actually check whether is greater than some small number, because agents tend to get stuck
                                              // on doors and stuff, so they may be "moving" while they are already at destination
         {
             anim.SetTrigger("walk");         // trigger transition from idle to walk in animation engine
         }
 
-        if (agent.velocity.magnitude <= 0.1f) // if agent's velocity is near zero, then piece is not moving, so start animating idle
+        if (!enemy && agent.velocity.magnitude <= 0.1f) // if agent's velocity is near zero, then piece is not moving, so start animating idle
         {
             anim.SetTrigger("idle");  // trigger animation of idle
         }
@@ -45,6 +51,11 @@ public class PieceBehaviour : MonoBehaviour
         {
             anim.SetTrigger("attack"); // trigger attack
             enemy.GetComponent<PieceBehaviour>().underAttack(); // substract health from the enemy's health.
+        }
+
+        if (health < MAX_HEALTH)
+        {
+            anim.SetTrigger("attack"); // trigger defense
         }
     }
 }
