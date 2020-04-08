@@ -5,6 +5,7 @@ using UnityEngine.AI;
 
 public class PieceBehaviour : MonoBehaviour
 {
+    public AudioClip walkSound;
     NavMeshAgent agent;
     Animator anim;
     public Transform enemy;
@@ -31,6 +32,12 @@ public class PieceBehaviour : MonoBehaviour
         }
     }
 
+    // this function is callled from "walk" animation of the pawn. It was associated by just specifying its name
+    public void playWalkSound()
+    {
+        GetComponent<AudioSource>().PlayOneShot(walkSound);
+    }
+
     // Update is called once per frame
     void Update()
     {
@@ -53,6 +60,7 @@ public class PieceBehaviour : MonoBehaviour
             enemy.GetComponent<PieceBehaviour>().underAttack(); // substract health from the enemy's health.
         }
 
+        // when a piece is under attack (that is, loosing health), it should have "attack" animation triggered.
         if (health < MAX_HEALTH)
         {
             anim.SetTrigger("attack"); // trigger defense
